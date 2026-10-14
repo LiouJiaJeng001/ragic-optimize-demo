@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ragic 表單優化前後對照｜概念示意</title>
+<style>
+:root{
+  --primary:#16706B;
+  --primary-dark:#0E524E;
+  --primary-mid:#2A8A84;
+  --primary-tint:#E6F1F0;
+  --primary-tint2:#F1F7F6;
+  --amber:#8A5813;
+  --amber-tint:#FBF1E1;
+  --danger:#A8412F;
+  --danger-tint:#FAEDEA;
+  --ink:#1D2A29;
+  --ink2:#3C4B49;
+  --muted:#5E6E6C;
+  --faint:#687775;
+  --border:#DCE4E3;
+  --border-strong:#C3CFCE;
+  --bg:#F5F8F7;
+  --card:#FFFFFF;
+  --radius:12px;
+  --sticky-h:130px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+  font-size:14px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1220px;margin:0 auto;padding:0 20px 60px}
+
+/* ---------- ribbon ---------- */
+.ribbon{
+  position:sticky;top:0;z-index:60;
+  background:var(--primary-dark);
+  color:#EAF3F2;
+  font-size:12.5px;
+  letter-spacing:.02em;
+  padding:8px 20px;
+  text-align:center;
+  border-bottom:1px solid #0A3F3C;
+}
+
+/* ---------- header ---------- */
+header.hero{
+  background:linear-gradient(180deg,#FFFFFF 0%,#F3F8F7 100%);
+  border-bottom:1px solid var(--border);
+  padding:30px 0 26px;
+}
+.hero h1{
+  margin:0 0 6px;
+  font-size:25px;
+  letter-spacing:-.01em;
+  font-weight:700;
+}
+.hero .sub{color:var(--muted);font-size:14px;margin:0 0 16px;max-width:760px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  border:1px solid var(--border-strong);
+  background:#FFF;
+  color:var(--ink2);
+  border-radius:999px;
+  padding:3px 11px;
+  font-size:12px;
+}
+.chip.key{background:var(--primary-tint);border-color:#BDD9D7;color:var(--primary-dark);font-weight:600}
+
+/* ---------- toggle bar ---------- */
+.bar{
+  position:sticky;top:38px;z-index:50;
+  background:rgba(245,248,247,.94);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--border);
+  padding:12px 0;
+  margin-bottom:20px;
+}
+.barin{max-width:1220px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.seg{display:inline-flex;background:#E7EDEC;border:1px solid var(--border-strong);border-radius:10px;padding:3px}
+.seg button{
+  appearance:none;border:0;background:transparent;cursor:pointer;
+  font-family:inherit;font-size:13.5px;font-weight:600;color:var(--muted);
+  padding:7px 18px;border-radius:8px;transition:.15s;
+}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:#FFF;color:var(--primary-dark);box-shadow:0 1px 3px rgba(14,82,78,.16)}
+.seg button.on.warn{color:var(--danger)}
+.barstat{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.barstat > span{white-space:nowrap}
+.barstat b{color:var(--ink);font-size:15px;font-weight:700}
+/* 主數字：唯一「往下走」的指標放第一格並放大 */
+.barstat .kpi b{color:var(--primary-dark);font-size:18px}
+.barstat .kpi .was{font-size:11.5px;color:var(--faint);margin-left:3px}
+.hintline{font-size:13px;color:var(--muted);margin-left:auto}
+
+/* ---------- layout ---------- */
+.grid2{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.card + .card{margin-top:20px}
+.chead{
+  padding:13px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:#FCFDFD;
+}
+.chead h2{margin:0;font-size:15px;font-weight:700}
+.chead .meta{font-size:12px;color:var(--muted);margin-left:auto}
+.tag{
+  font-size:11px;padding:2px 8px;border-radius:999px;
+  border:1px solid var(--border-strong);background:#FFF;color:var(--muted);
+  white-space:nowrap;
+}
+.tag.bad{background:var(--danger-tint);border-color:#E4BFB7;color:var(--danger);font-weight:600}
+.tag.good{background:var(--primary-tint);border-color:#BDD9D7;color:var(--primary-dark);font-weight:600}
+.tag.amb{background:var(--amber-tint);border-color:#E5CFA5;color:var(--amber);font-weight:600}
+.cbody{padding:16px}
+
+/* ---------- form ---------- */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.field,.gname{scroll-margin-top:var(--sticky-h,130px)}
+.field{
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:8px 10px 9px;
+  background:#FFF;
+  transition:box-shadow .18s,border-color .18s,background .18s;
+}
+.field.wide{grid-column:1 / -1}
+.flabel{
+  display:block;font-size:12px;color:var(--muted);
+  margin-bottom:4px;font-weight:600;
+}
+.req{color:var(--danger);margin-left:2px;font-weight:700}
+.fnote{
+  display:inline-block;margin-left:6px;font-size:10.5px;font-weight:600;
+  padding:1px 6px;border-radius:999px;vertical-align:1px;
+  background:var(--danger-tint);color:var(--danger);
+}
+.fnote.n2{background:var(--amber-tint);color:var(--amber)}
+input.f,select.f,textarea.f{
+  width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);
+  border:1px solid var(--border-strong);border-radius:7px;
+  padding:6px 8px;background:#FDFEFE;
+}
+input.f:focus,select.f:focus,textarea.f:focus{
+  outline:none;border-color:var(--primary-mid);box-shadow:0 0 0 3px rgba(42,138,132,.14);
+}
+input.f[readonly],textarea.f[readonly]{
+  background:var(--primary-tint2);border-style:dashed;border-color:#A9CBC8;
+  color:var(--ink2);cursor:default;
+}
+input.f.num,select.f.num{font-variant-numeric:tabular-nums}
+textarea.f{resize:vertical;min-height:56px;line-height:1.55}
+.calc{
+  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  background:var(--primary-tint2);border:1px dashed #A9CBC8;border-radius:7px;
+  padding:6px 9px;
+}
+.calc .v{font-size:15px;font-weight:700;color:var(--primary-dark);font-variant-numeric:tabular-nums}
+.calc .auto{font-size:10.5px;color:var(--primary);border:1px solid #BDD9D7;border-radius:999px;padding:1px 6px;background:#FFF}
+.gname{
+  grid-column:1 / -1;
+  display:flex;align-items:center;gap:9px;
+  margin:8px 0 -2px;padding:5px 2px 5px 0;
+  font-size:12.5px;font-weight:700;color:var(--primary-dark);
+  border-bottom:1px solid var(--primary-tint);
+  transition:background .18s;
+}
+.gname:first-child{margin-top:0}
+.gnum{
+  width:19px;height:19px;border-radius:6px;background:var(--primary);color:#FFF;
+  font-size:11px;display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;
+}
+details.adv{grid-column:1 / -1;margin-top:12px;border:1px solid var(--border);border-radius:9px;background:#FAFCFB}
+details.adv > summary{
+  cursor:pointer;padding:9px 12px;font-size:12.5px;font-weight:700;color:var(--ink2);
+  list-style:none;display:flex;align-items:center;gap:8px;
+}
+details.adv > summary::-webkit-details-marker{display:none}
+details.adv > summary::before{content:"+";font-weight:700;color:var(--primary);width:14px;display:inline-block}
+details.adv[open] > summary::before{content:"-"}
+.advbody{padding:2px 12px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+
+/* highlight states */
+.field.hl-problem,.gname.hl-problem{
+  border-color:var(--danger)!important;background:var(--danger-tint);
+  box-shadow:0 0 0 3px rgba(168,65,47,.13);
+}
+.field.hl-fixed,.gname.hl-fixed{
+  border-color:var(--amber)!important;background:var(--amber-tint);
+  box-shadow:0 0 0 3px rgba(138,88,19,.15);
+}
+.gname.hl-problem,.gname.hl-fixed{border-radius:7px;padding-left:8px}
+
+/* ---------- checklist ---------- */
+.clist{display:flex;flex-direction:column;gap:8px}
+.ci{
+  border:1px solid var(--border);border-radius:10px;background:#FFF;
+  padding:10px 12px;cursor:pointer;transition:.16s;
+}
+.ci:hover{border-color:var(--primary-mid);background:#FBFDFD}
+.ci.active{border-color:var(--amber);background:var(--amber-tint);box-shadow:0 1px 4px rgba(138,88,19,.16)}
+.ci .cirow{display:flex;align-items:flex-start;gap:9px}
+.ci .cnum{
+  flex:0 0 auto;width:20px;height:20px;border-radius:6px;
+  background:var(--primary-tint);color:var(--primary-dark);
+  font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;
+  font-variant-numeric:tabular-nums;margin-top:1px;
+}
+.ci.active .cnum{background:var(--amber);color:#FFF}
+.ci .ct{font-size:13.5px;font-weight:700;line-height:1.45}
+.ci .cdetail{display:none;margin-top:7px;padding-top:7px;border-top:1px dashed #DCC9A6}
+.ci.active .cdetail{display:block}
+.ci .cdetail p{margin:0 0 5px;font-size:12.5px;color:var(--ink2)}
+.ci .cdetail p:last-child{margin-bottom:0}
+.ci .cdetail .lab{
+  display:inline-block;min-width:38px;font-size:11px;font-weight:700;
+  color:var(--amber);margin-right:5px;
+}
+.ci .cdetail .lab.b{color:var(--primary-dark)}
+/* 單欄（窄螢幕）時才出現：不自動捲動，改由使用者自己決定何時看表單 */
+.ci .cjump{display:none;align-items:center;gap:8px;flex-wrap:wrap;margin-top:7px}
+.jbtn{
+  appearance:none;border:0;cursor:pointer;font-family:inherit;
+  font-size:12px;font-weight:700;color:#FFF;background:var(--primary);
+  border-radius:7px;padding:5px 10px;
+}
+.jbtn:hover{background:var(--primary-dark)}
+.jcount{font-size:11.5px;color:var(--muted)}
+.hintbox{
+  margin-top:12px;font-size:12px;color:var(--muted);
+  background:var(--primary-tint2);border:1px solid #D6E6E4;border-radius:9px;padding:9px 11px;
+}
+
+/* ---------- data quality ---------- */
+.dq{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dqbox{border:1px solid var(--border);border-radius:10px;padding:12px 13px}
+.dqbox.bad{background:#FEFAF9;border-color:#EBD1CB}
+.dqbox.good{background:#F7FBFA;border-color:#CCE2E0}
+.dqbox h3{margin:0 0 3px;font-size:13px;font-weight:700}
+.dqbox.bad h3{color:var(--danger)}
+.dqbox.good h3{color:var(--primary-dark)}
+.dqbox .dqsub{font-size:11.5px;color:var(--muted);margin:0 0 10px}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th{
+  text-align:left;font-weight:700;color:var(--muted);font-size:11.5px;
+  padding:0 6px 5px;border-bottom:1px solid var(--border);
+}
+table.t td{padding:6px;border-bottom:1px solid #EEF2F1;vertical-align:middle}
+table.t tr:last-child td{border-bottom:0}
+table.t td.r{text-align:right;font-variant-numeric:tabular-nums}
+table.t th.r{text-align:right}
+.dqbox table.t th:nth-child(4),.dqbox table.t td:nth-child(4){width:64px}
+.pctv{display:block;font-size:11px;color:var(--ink2);margin-bottom:3px;font-variant-numeric:tabular-nums}
+.bar1{display:block;height:6px;border-radius:3px;background:#E7EDEC;overflow:hidden}
+.bar1 i{display:block;height:100%;border-radius:3px}
+.dqbox.bad .bar1 i{background:var(--danger)}
+.dqbox.good .bar1 i{background:var(--primary)}
+.dqnote{
+  grid-column:1 / -1;font-size:12.5px;color:var(--ink2);
+  background:var(--amber-tint);border:1px solid #E9D7B4;border-radius:9px;padding:10px 12px;
+}
+.rawtbl{margin-top:14px}
+
+/* ---------- relation diagram ---------- */
+.rel{display:flex;align-items:stretch;gap:0;flex-wrap:nowrap}
+.rnode{
+  flex:1 1 0;min-width:0;
+  border:1px solid var(--border-strong);border-radius:11px;background:#FFF;
+  padding:12px 13px;
+}
+.rnode h4{margin:0 0 2px;font-size:13.5px;font-weight:700;color:var(--primary-dark)}
+.rnode .rsub{font-size:11.5px;color:var(--faint);margin:0 0 9px}
+.rnode ul{margin:0;padding-left:0;list-style:none}
+.rnode li{
+  font-size:12px;color:var(--ink2);padding:3px 0;
+  border-bottom:1px dashed #EAEFEE;
+}
+.rnode li:last-child{border-bottom:0}
+.rnode li b{color:var(--primary);font-weight:700}
+.rnode li .pk{
+  font-size:10px;background:var(--primary-tint);color:var(--primary-dark);
+  border-radius:4px;padding:1px 5px;margin-left:5px;font-weight:700;
+}
+.rconn{
+  flex:0 1 clamp(52px,11%,122px);min-width:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 6px;text-align:center;
+}
+.rconn .rline{width:100%;height:2px;background:var(--primary-mid);position:relative}
+.rconn .rline::after{
+  content:"";position:absolute;right:-1px;top:-4px;
+  border-left:8px solid var(--primary-mid);
+  border-top:5px solid transparent;border-bottom:5px solid transparent;
+}
+.rconn .rlab{font-size:11px;color:var(--primary-dark);font-weight:700;margin-bottom:5px}
+.rconn .rlab2{font-size:10.5px;color:var(--faint);margin-top:5px}
+
+/* ---------- footer ---------- */
+footer.foot{
+  margin-top:26px;border-top:1px solid var(--border);padding-top:18px;
+  font-size:12.5px;color:var(--muted);
+}
+footer.foot h5{margin:0 0 7px;font-size:12.5px;color:var(--ink2);font-weight:700}
+footer.foot ul{margin:0 0 10px;padding-left:18px}
+footer.foot li{margin-bottom:3px}
+footer.foot .sig{
+  margin-top:12px;padding-top:11px;border-top:1px dashed var(--border-strong);
+  color:var(--ink);font-weight:700;font-size:13px;
+}
+
+/* ---------- responsive ---------- */
+/* 三表關聯圖：橫排空間不足就改直排（連接器 flex 基準已可壓縮，這裡處理更窄的情況） */
+@media (max-width:1080px){
+  .rel{flex-wrap:wrap}
+  .rnode{flex:1 1 100%}
+  .rconn{flex:1 1 100%;padding:10px 0;flex-direction:row;gap:10px}
+  .rconn .rline{width:2px;height:26px}
+  .rconn .rline::after{right:-4px;top:auto;bottom:-1px;
+    border-left:5px solid transparent;border-right:5px solid transparent;
+    border-top:8px solid var(--primary-mid);border-bottom:0}
+  .rconn .rlab{margin-bottom:0}
+  .rconn .rlab2{margin-top:0}
+}
+@media (max-width:1000px){
+  .grid2{grid-template-columns:1fr}
+  .dq{grid-template-columns:1fr}
+  /* 單欄時把「優化項目清單」移到表單上方，操作入口才不會掉到頁尾 */
+  .grid2 > .sidecol{order:-1}
+  /* 單欄時清單與表單相距很遠，改成不自動捲動、給一顆跳轉按鈕（見 applyHighlight） */
+  .ci.active .cjump{display:flex}
+}
+/* 中窄螢幕（平板直立、桌機縮小視窗、分割畫面）：
+   切換開關是本頁核心操作，工具列必須維持吸頂，改成把整條收矮
+   —— 統計改單行可橫捲、提示文字隱藏（清單卡片下方的 hintbox 已有同樣說明） */
+@media (max-width:800px){
+  .bar{padding:8px 0}
+  .barin{gap:8px 12px}
+  .barstat{width:100%;gap:12px;flex-wrap:nowrap;overflow-x:auto;font-size:12px}
+  .barstat b{font-size:14px}
+  .barstat .kpi b{font-size:16px}
+  .hintline{display:none}
+}
+@media (max-width:660px){
+  .fgrid,.advbody{grid-template-columns:1fr}
+  .hero h1{font-size:21px}
+  .wrap{padding:0 14px 44px}
+  .barin{padding:0 14px}
+  .bar{padding:6px 0}
+  .seg button{padding:6px 11px;font-size:12.5px}
+  /* iOS Safari 在輸入框字級小於 16px 時會自動放大頁面且不會縮回，這裡拉到 16px；
+     不用 maximum-scale／user-scalable 擋，那會剝奪使用者縮放能力 */
+  input.f,select.f,textarea.f{font-size:16px}
+  /* 標準化對照表：欄寬不夠就整表橫向捲動，膠囊標籤才不會被壓斷行 */
+  .rawtbl{overflow-x:auto}
+  .rawtbl table.t{min-width:430px}
+}
+</style>
+</head>
+<body class="mode-before">
+
+<div class="ribbon">概念示意　·　本頁所有表單欄位與數字皆為虛構範例，非任何客戶實際資料　·　劉佳政</div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Ragic 表單優化前後對照</h1>
+    <p class="sub">同一張「客戶訂單表」，用上方開關在「優化前」與「優化後」之間切換，就能看出「更清楚簡便」具體是什麼意思——不是換顏色，是欄位順序、命名、必填、選項、計算方式全部重新收斂。<br><strong>以下「優化前」是依常見 Ragic 使用情境虛構的典型範例，不是貴公司的表單</strong>，我尚未看過貴司現有表單。</p>
+    <div class="chips">
+      <span class="chip key">CRM</span>
+      <span class="chip key">進銷存</span>
+      <span class="chip key">財務</span>
+      <span class="chip">欄位分組與流程順序</span>
+      <span class="chip">命名規則統一</span>
+      <span class="chip">選項標準化</span>
+      <span class="chip">計算欄位自動帶出</span>
+      <span class="chip">表單關聯去重複輸入</span>
+    </div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="barin">
+    <div class="seg" id="seg">
+      <button type="button" class="on warn" data-mode="before">優化前（常見亂象範例）</button>
+      <button type="button" data-mode="after">優化後（建議）</button>
+    </div>
+    <div class="barstat">
+      <span class="kpi">需手動填寫　<b class="num" id="stManual">20</b> 欄<span class="was" id="stManualWas"></span></span>
+      <span>表單欄位　<b class="num" id="stFields">20</b> 欄</span>
+      <span>分組　<b class="num" id="stGroups">0</b> 組</span>
+      <span>範例問題欄位　<b class="num" id="stIssue">15</b> 欄</span>
+      <span>必填標示　<b id="stReq">無</b></span>
+    </div>
+    <div class="hintline">點「優化項目」任一條，表單上會高亮對應欄位</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="grid2">
+    <!-- ============ 表單區 ============ -->
+    <div>
+      <div class="card">
+        <div class="chead">
+          <h2 id="formTitle">客戶訂單表（範例·優化前）</h2>
+          <span class="tag bad" id="formTag">範例：欄位混雜、無分組</span>
+          <span class="meta" id="formMeta">範例情境：一張表塞進 CRM、進銷存、人事欄位</span>
+        </div>
+        <div class="cbody">
+          <div class="fgrid" id="formHost"></div>
+        </div>
+      </div>
+
+      <!-- ============ 資料品質影響 ============ -->
+      <div class="card">
+        <div class="chead">
+          <h2>資料品質影響：同一件事被拆成三列</h2>
+          <span class="tag amb">最容易被忽略的成本</span>
+        </div>
+        <div class="cbody">
+          <div class="dq">
+            <div class="dqbox bad">
+              <h3>優化前：縣市欄位是自由文字</h3>
+              <p class="dqsub">6 筆客戶資料，統計「臺北客戶」時被切成 3 列</p>
+              <table class="t">
+                <thead><tr><th>縣市（原始輸入）</th><th class="r">筆數</th><th class="r">金額</th><th class="r">占比</th></tr></thead>
+                <tbody id="dqBefore"></tbody>
+              </table>
+            </div>
+            <div class="dqbox good">
+              <h3>優化後：改為標準化選單</h3>
+              <p class="dqsub">同樣 6 筆資料，統計結果收斂成 1 列</p>
+              <table class="t">
+                <thead><tr><th>縣市（標準值）</th><th class="r">筆數</th><th class="r">金額</th><th class="r">占比</th></tr></thead>
+                <tbody id="dqAfter"></tbody>
+              </table>
+            </div>
+            <div class="dqnote" id="dqNote"></div>
+          </div>
+
+          <div class="rawtbl">
+            <table class="t">
+              <thead><tr><th>客戶名稱（虛構）</th><th>原始輸入值</th><th>標準化後</th><th class="r">金額</th></tr></thead>
+              <tbody id="rawRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 表單關聯建議 ============ -->
+      <div class="card">
+        <div class="chead">
+          <h2>表單關聯建議：客戶資料只輸入一次</h2>
+          <span class="tag good">建議架構</span>
+          <span class="meta">以「客戶編號」為主鍵串接三張表</span>
+        </div>
+        <div class="cbody">
+          <div class="rel">
+            <div class="rnode">
+              <h4>CRM｜客戶主檔</h4>
+              <p class="rsub">唯一的客戶資料來源</p>
+              <ul>
+                <li>客戶編號<span class="pk">主鍵</span></li>
+                <li>客戶名稱</li>
+                <li>縣市（標準化選單）</li>
+                <li>聯絡人 / 聯絡電話</li>
+                <li>統一編號</li>
+              </ul>
+            </div>
+            <div class="rconn">
+              <div class="rlab">關聯欄位</div>
+              <div class="rline"></div>
+              <div class="rlab2">客戶編號 → 自動帶出名稱、電話</div>
+            </div>
+            <div class="rnode">
+              <h4>進銷存｜訂單與出貨</h4>
+              <p class="rsub">只選客戶，不再重打資料</p>
+              <ul>
+                <li>訂單編號<span class="pk">主鍵</span></li>
+                <li>客戶編號<span class="pk">關聯</span></li>
+                <li>訂單明細<b>（子表格）</b></li>
+                <li>品項 / 數量 / 單價（子表格逐列）</li>
+                <li>小計<b>（公式）</b></li>
+                <li>出貨狀態</li>
+              </ul>
+            </div>
+            <div class="rconn">
+              <div class="rlab">關聯欄位</div>
+              <div class="rline"></div>
+              <div class="rlab2">訂單編號 → 自動帶出金額</div>
+            </div>
+            <div class="rnode">
+              <h4>財務｜應收與收款</h4>
+              <p class="rsub">金額由訂單帶入，不手抄</p>
+              <ul>
+                <li>應收編號<span class="pk">主鍵</span></li>
+                <li>訂單編號<span class="pk">關聯</span></li>
+                <li>應收金額<b>（帶入）</b></li>
+                <li>已收金額</li>
+                <li>未收餘額<b>（公式）</b></li>
+              </ul>
+            </div>
+          </div>
+          <div class="hintbox">關聯做起來之後，客戶改電話只要改 CRM 一處；訂單金額改了，財務的應收自動跟著變。若三張表各自手打，時間久了很容易出現「同一個客戶三種寫法、三種金額」的對不起來的狀況。<br>對應的 Ragic 功能是「連結與載入」（以客戶編號帶出名稱、電話）與「公式欄位」（小計、未收餘額）；一張訂單多個品項則用「子表格」，總計由子表格加總。權限可用「群組權限＋欄位權限」設定，例如業務只看得到自己負責的客戶、財務只看得到金額相關欄位。這張圖是常見架構示意，實際主鍵怎麼設要看貴司現有編號規則。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 優化項目清單 ============ -->
+    <div class="sidecol">
+      <div class="card">
+        <div class="chead">
+          <h2>優化項目清單</h2>
+          <span class="tag" id="ciCount">10 項</span>
+        </div>
+        <div class="cbody">
+          <div class="clist" id="clist"></div>
+          <div class="hintbox">每一條都對應到表單上的實際欄位。點一下會展開理由與效益，同時把「優化前」的問題欄位標紅、「優化後」的改動欄位標琥珀色；選定同一條後切換上方開關，就能看出這一項改動前後的差別。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <h5>關於這份示意</h5>
+    <ul>
+      <li>這是投標用的<strong>概念示意</strong>，用來說明我理解「表單優化」要處理哪些事，不是已完成的專案成果，也不是任何客戶的實際畫面。</li>
+      <li>頁面上所有客戶名稱、電話、金額、日期、客戶編號、統計數字<strong>全部是虛構範例</strong>，僅為示範用。</li>
+      <li><strong>模擬的部分：</strong>「優化前」的欄位亂象是依<strong>常見 Ragic 使用情境</strong>組出來的典型案例；優化項目清單、資料品質統計、三表關聯圖同為示意架構。我<strong>沒有看過貴司的表單</strong>，也不做任何關於貴司現況的斷言，<strong>實際優化需檢視貴司現有表單結構</strong>後才能定案。</li>
+      <li><strong>純前端示範：</strong>本頁為單一 HTML 檔、無後端、無外部資源，計算與統計都在瀏覽器即時運算，資料不會被儲存或送出。這裡只是把優化後的樣子畫出來，不是 Ragic 的實際操作介面。</li>
+      <li><strong>實際導入會怎麼做：</strong>(1) 先盤點現有表單、欄位與使用者，列出誰在什麼時候填哪些欄位；(2) 訂命名規則與選項字典（縣市、狀態、單位等），把既有資料做一次清理對應；(3) 重排欄位順序與分組、設必填與格式驗證、把手填數字改公式；(4) 建立表單間關聯與權限，讓資料只輸入一次；(5) 附一份欄位定義與維護說明，之後貴司自己新增表單也有規則可循。改動會先在測試表單上做，確認後再套到正式表單，避免影響現有資料。</li>
+    </ul>
+    <div class="sig">劉佳政 · LINE i100263340 · i100263340@gmail.com</div>
+  </footer>
+</div>
+
+<script id="logic">
+/* ------------------------------------------------------------------
+   純資料與純函式區：不接觸 DOM，可單獨在 node 中驗算
+   ------------------------------------------------------------------ */
+var TAX_RATE = 0.05;
+
+/* 計算欄位邏輯：小計 / 稅額 / 總計
+   下界一律夾在 0：HTML 的 min="0" 只在表單驗證時作用、不會限制 input.value，
+   使用者打負數時不能讓公式欄位算出負的金額 */
+function computeTotals(qty, unitPrice, taxRate) {
+  var q = Math.max(0, Number(qty) || 0);
+  var p = Math.max(0, Number(unitPrice) || 0);
+  var r = Math.max(0, Number(taxRate) || 0);
+  var subtotal = Math.round(q * p);
+  var tax = Math.round(subtotal * r);
+  return { subtotal: subtotal, tax: tax, total: subtotal + tax };
+}
+
+/* 縣市同義異寫標準化字典
+   標準值採用政府公告寫法「臺」，與下方 CITY_OPTIONS 選單一致 */
+var CITY_MAP = {
+  '台北': '臺北市',
+  '臺北': '臺北市',
+  '台北市': '臺北市',
+  '臺北市': '臺北市',
+  '北市': '臺北市'
+};
+
+function normalizeCity(raw) {
+  var s = String(raw == null ? '' : raw).replace(/\s+/g, '');
+  if (CITY_MAP[s]) { return CITY_MAP[s]; }
+  return s;
+}
+
+/* 虛構的 6 筆客戶資料（示意用） */
+var RECORDS = [
+  { name: '宏誠實業有限公司', city: '台北市', amount: 128000 },
+  { name: '群安科技股份有限公司', city: '臺北市', amount: 96000 },
+  { name: '立菖企業社', city: '台北', amount: 45000 },
+  { name: '佑順貿易有限公司', city: '台北市', amount: 210000 },
+  { name: '昇陽電子有限公司', city: '臺北市', amount: 67000 },
+  { name: '大川五金行', city: '台北市', amount: 154000 }
+];
+
+/* 依縣市彙總；normalize 為 true 時先標準化再彙總 */
+function aggregateCities(records, normalize) {
+  var order = [];
+  var map = {};
+  var i, key, rec;
+  for (i = 0; i < records.length; i++) {
+    rec = records[i];
+    key = normalize ? normalizeCity(rec.city) : rec.city;
+    if (!map[key]) {
+      map[key] = { city: key, count: 0, amount: 0 };
+      order.push(key);
+    }
+    map[key].count += 1;
+    map[key].amount += rec.amount;
+  }
+  var out = [];
+  for (i = 0; i < order.length; i++) { out.push(map[order[i]]); }
+  out.sort(function (a, b) { return b.amount - a.amount; });
+  return out;
+}
+
+function sumAmount(records) {
+  var t = 0;
+  for (var i = 0; i < records.length; i++) { t += records[i].amount; }
+  return t;
+}
+
+function fmtMoney(n) {
+  var s = String(Math.round(Number(n) || 0));
+  return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+/* ---------------- 優化前：欄位刻意混亂 ---------------- */
+var BEFORE_FIELDS = [
+  { id: 'cust_name', label: '客戶名稱', type: 'text', value: '宏誠實業有限公司' },
+  { id: 'subtotal', label: '小計', type: 'text', value: '3600', note: '手填', numeric: true },
+  { id: 'contact', label: '聯絡人', type: 'text', value: '王小明', note: '夾在金額中間' },
+  { id: 'tax', label: '稅額', type: 'text', value: '180', note: '手填', numeric: true },
+  { id: 'client_en', label: 'Client', type: 'text', value: 'HongCheng Ind.', note: '命名不一致' },
+  { id: 'total', label: '總計', type: 'text', value: '3500', note: '手填算錯', numeric: true },
+  { id: 'phone', label: '電話', type: 'text', value: '02-27651234' },
+  { id: 'order_date', label: '成立日期', type: 'text', value: '115/09/01', note: '民國年' },
+  { id: 'city', label: '城市', type: 'text', value: '臺北市', note: '自由文字' },
+  { id: 'cust_short', label: '客戶', type: 'text', value: '宏誠', note: '重複欄位' },
+  { id: 'mobile', label: '聯絡電話', type: 'text', value: '0912-345-678', note: '重複欄位' },
+  { id: 'deliver_date', label: '交貨日', type: 'text', value: '2026-9-3', note: '西元無補零' },
+  { id: 'qty', label: '數量', type: 'text', value: '3', numeric: true },
+  { id: 'price', label: '單價', type: 'text', value: '1200', numeric: true },
+  { id: 'pay_date', label: '付款日', type: 'text', value: '9/5', note: '沒有年份' },
+  { id: 'owner', label: '業務', type: 'text', value: '陳', note: '無選單' },
+  { id: 'stock_link', label: '庫存扣帳', type: 'text', value: '已扣', note: '不屬本表' },
+  { id: 'emp_no', label: '員工編號', type: 'text', value: '', note: '不屬本表' },
+  { id: 'addr', label: '地址', type: 'text', value: '臺北市中山區南京東路三段 12 號' },
+  { id: 'note', label: '備註', type: 'textarea', wide: true, note: '什麼都往這塞',
+    value: '客戶要求分批出貨／發票寄總公司／上次抱怨過包裝／窗口換人了記得改電話／9月報價單編號 Q-2026-0831' }
+];
+
+/* ---------------- 優化後：分組、命名統一、必填、選單、公式 ---------------- */
+var CITY_OPTIONS = ['臺北市', '新北市', '桃園市', '臺中市', '臺南市', '高雄市', '新竹縣', '新竹市'];
+var OWNER_OPTIONS = ['陳志豪', '林美君', '黃俊翔'];
+var SRC_OPTIONS = ['展覽名單', '客戶轉介', '官網詢價', '電話開發'];
+
+var AFTER_GROUPS = [
+  {
+    id: 'g_basic', no: 1, name: '基本資料', hint: '客戶是誰',
+    fields: [
+      { id: 'cust_id', label: '客戶編號', kind: 'readonly', value: 'C-10428', tagText: '關聯 CRM 自動帶入', required: true },
+      { id: 'cust_name', label: '客戶名稱', kind: 'readonly', value: '宏誠實業有限公司', tagText: '關聯帶入', required: true },
+      { id: 'city', label: '縣市', kind: 'select', options: CITY_OPTIONS, value: '臺北市', required: true },
+      { id: 'addr', label: '地址', kind: 'text', value: '臺北市中山區南京東路三段 12 號' }
+    ]
+  },
+  {
+    id: 'g_contact', no: 2, name: '聯絡方式', hint: '找得到人',
+    fields: [
+      { id: 'contact', label: '聯絡人', kind: 'text', value: '王小明', required: true },
+      { id: 'phone', label: '公司電話', kind: 'tel', value: '02-2765-1234', required: true },
+      { id: 'mobile', label: '行動電話', kind: 'tel', value: '0912-345-678' },
+      { id: 'email', label: '聯絡 Email', kind: 'text', value: 'wang@example.com' }
+    ]
+  },
+  {
+    id: 'g_deal', no: 3, name: '交易資訊', hint: '這筆訂單的內容與金額',
+    fields: [
+      { id: 'order_date', label: '訂單日期', kind: 'date', value: '2026-09-01', required: true },
+      { id: 'deliver_date', label: '預計交貨日', kind: 'date', value: '2026-09-03', required: true },
+      { id: 'qty', label: '數量', kind: 'number', value: '3', required: true, live: 'qty' },
+      { id: 'price', label: '單價', kind: 'number', value: '1200', required: true, live: 'price' },
+      { id: 'subtotal', label: '小計', kind: 'calc', calc: 'subtotal' },
+      { id: 'tax', label: '稅額（5%）', kind: 'calc', calc: 'tax' },
+      { id: 'total', label: '總計', kind: 'calc', calc: 'total', wide: true },
+      { id: 'pay_date', label: '預計付款日', kind: 'date', value: '2026-09-05' }
+    ]
+  },
+  {
+    id: 'g_internal', no: 4, name: '內部備註', hint: '對外不顯示',
+    fields: [
+      { id: 'owner', label: '負責業務', kind: 'select', options: OWNER_OPTIONS, value: '陳志豪', required: true },
+      { id: 'note', label: '內部備註', kind: 'textarea', wide: true, value: '客戶要求分批出貨，發票寄總公司。' }
+    ]
+  }
+];
+
+var AFTER_ADVANCED = [
+  { id: 'stock_link', label: '庫存異動', kind: 'readonly', value: '已扣帳（進銷存 #S-8821）', tagText: '關聯進銷存' },
+  { id: 'emp_no', label: '建檔人員', kind: 'readonly', value: '林美君', tagText: '系統自動記錄' },
+  { id: 'src', label: '客戶來源', kind: 'select', options: SRC_OPTIONS, value: '展覽名單' },
+  { id: 'quote_no', label: '報價單編號', kind: 'text', value: 'Q-2026-0831' }
+];
+
+/* ---------------- 優化項目清單 ---------------- */
+var CHECKLIST = [
+  {
+    t: '欄位依作業流程重新分組',
+    why: '這類表單常見的欄位順序是「想到什麼加什麼」，聯絡人夾在小計和稅額中間，填表的人要上下跳著找。',
+    benefit: '分成基本資料／聯絡方式／交易資訊／內部備註四段，照填表順序走，新人不用問人也填得完。',
+    ragic: '表單設計的欄位分組與排版設定',
+    b: ['subtotal', 'contact', 'tax', 'total'],
+    a: ['g_basic', 'g_contact', 'g_deal', 'g_internal']
+  },
+  {
+    t: '命名統一：一個概念只有一個名字',
+    why: '範例中「客戶名稱」「客戶」「Client」三個欄位講的是同一件事；「電話」和「聯絡電話」也分不出誰是手機。',
+    benefit: '留一個「客戶名稱」，電話明確拆成「公司電話」與「行動電話」，報表欄位標題不再需要口頭解釋。',
+    ragic: '欄位標題命名規則（同一概念只保留一個欄位）',
+    b: ['cust_name', 'cust_short', 'client_en', 'phone', 'mobile'],
+    a: ['cust_name', 'phone', 'mobile']
+  },
+  {
+    t: '必填與選填明確標示',
+    why: '常見情況是全部欄位長得一樣，漏填客戶名稱或聯絡電話也存得進去，事後才發現資料不完整。',
+    benefit: '關鍵欄位加必填紅星並設驗證，存檔前就攔下來，比事後補資料省事。',
+    ragic: '欄位屬性的必填設定與格式驗證',
+    b: ['cust_name', 'contact', 'phone', 'order_date'],
+    a: ['cust_id', 'cust_name', 'city', 'contact', 'phone', 'order_date', 'deliver_date', 'qty', 'price', 'owner']
+  },
+  {
+    t: '自由文字改成標準化選單',
+    why: '範例中「城市」是自由文字，於是同一個臺北出現「台北市」「臺北市」「台北」三種寫法。',
+    benefit: '改成選單後值就固定了，報表不再因為「台北／臺北」分成兩列，篩選也一次抓得全（見下方資料品質區塊）。標準值採政府公告寫法「臺」。',
+    ragic: '選項欄位（單選／下拉選單）',
+    b: ['city', 'owner'],
+    a: ['city', 'owner', 'src']
+  },
+  {
+    t: '日期欄位統一用日期選擇器',
+    why: '常見情況是三個日期三種格式：民國年、西元沒補零、只有月日沒有年。這種欄位沒辦法排序也沒辦法算天數。',
+    benefit: '統一改成日期欄位，可以排序、可以做「交貨逾期幾天」「帳款到期提醒」這類條件。',
+    ragic: '日期欄位（日期選擇器）與日期公式',
+    b: ['order_date', 'deliver_date', 'pay_date'],
+    a: ['order_date', 'deliver_date', 'pay_date']
+  },
+  {
+    t: '計算欄位改公式自動帶出',
+    why: '範例中小計、稅額、總計都是手填。示範資料裡 3 × 1200 應該是 3,600、稅 180、總計 3,780，但表上手填的總計是 3,500——這種錯只有對帳時才會發現。',
+    benefit: '設成公式後不會再有手抄算錯的問題，也不用改一個數字要跟著改三格。改左邊的數量或單價，右邊三個數字會立刻跟著變。',
+    ragic: '公式欄位',
+    b: ['qty', 'price', 'subtotal', 'tax', 'total'],
+    a: ['qty', 'price', 'subtotal', 'tax', 'total']
+  },
+  {
+    t: '移除重複欄位',
+    why: '範例中「客戶」「Client」「聯絡電話」與既有欄位重複，兩邊填的內容常常不一樣，之後不知道該相信哪一個。',
+    benefit: '重複欄位合併掉，資料只有一個出處，匯出去的檔案也不會多出一堆沒人維護的空欄。',
+    ragic: '欄位整併與匯出欄位設定',
+    b: ['cust_short', 'client_en', 'mobile'],
+    a: ['cust_name', 'mobile']
+  },
+  {
+    t: '不屬於本表的欄位移回原表',
+    why: '範例中「庫存扣帳」屬於進銷存、「員工編號」屬於人事，卻掛在客戶訂單表上，導致這張表誰都要開、權限不好切。',
+    benefit: '移回各自的表，本表只用關聯欄位顯示結果（收進進階區）。主畫面一眼看完的欄位變少、權限好設，也不會有人誤改別部門的資料。',
+    ragic: '連結與載入＋群組權限／欄位權限',
+    b: ['stock_link', 'emp_no'],
+    a: ['stock_link', 'emp_no']
+  },
+  {
+    t: '不常用欄位收進「進階」摺疊區',
+    why: '範例中備註欄什麼都往裡面塞（出貨方式、發票、抱怨、報價單編號全混在一段文字），要找資料只能用眼睛掃。',
+    benefit: '常用欄位留在上面，報價單編號、客戶來源、建檔人員這些收進摺疊區，畫面一眼看完，需要時再展開。',
+    ragic: '欄位排版分區（不常用欄位收進進階區）',
+    b: ['note', 'addr'],
+    a: ['src', 'quote_no', 'emp_no']
+  },
+  {
+    t: '用表單關聯取代重複輸入',
+    why: '若客戶名稱、電話、地址在 CRM、進銷存、財務各打一次，改一處就會有三處對不起來。',
+    benefit: '以客戶編號關聯 CRM，選了客戶就自動帶出名稱與電話；金額由訂單帶到財務。資料只輸入一次（見下方關聯圖）。',
+    ragic: '連結與載入（Link and Load）',
+    b: ['cust_name', 'addr', 'stock_link'],
+    a: ['cust_id', 'cust_name', 'stock_link']
+  },
+  {
+    t: '一單多品項改用子表格',
+    why: '一張訂單常常不只一個品項。品項、數量、單價各只有一個欄位時，多品項只能另開一筆訂單，或整段塞進備註。',
+    benefit: '訂單明細改成子表格，一單可以多列，每列各自算小計、總計由子表格加總，出貨與對帳都對得起來。本頁表單為簡化示意，只畫單一品項。',
+    ragic: '子表格（Subtable）＋子表格加總公式',
+    b: ['qty', 'price', 'subtotal', 'note'],
+    a: ['qty', 'price', 'subtotal', 'total']
+  }
+];
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    computeTotals: computeTotals,
+    normalizeCity: normalizeCity,
+    aggregateCities: aggregateCities,
+    sumAmount: sumAmount,
+    fmtMoney: fmtMoney,
+    RECORDS: RECORDS,
+    BEFORE_FIELDS: BEFORE_FIELDS,
+    AFTER_GROUPS: AFTER_GROUPS,
+    AFTER_ADVANCED: AFTER_ADVANCED,
+    CHECKLIST: CHECKLIST,
+    TAX_RATE: TAX_RATE
+  };
+}
+</script>
+
+<script>
+/* ------------------------------------------------------------------
+   DOM 串接（ES5 風格）
+   ------------------------------------------------------------------ */
+var MODE = 'before';
+var ACTIVE = -1;
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function byId(id) { return document.getElementById(id); }
+
+/* ---------- 建立「優化前」表單 ---------- */
+function buildBefore() {
+  var html = '';
+  var i, f, eid;
+  for (i = 0; i < BEFORE_FIELDS.length; i++) {
+    f = BEFORE_FIELDS[i];
+    /* 每個欄位給唯一 id，label 用 for 對應：點標籤能 focus，螢幕閱讀器也唸得出欄位名 */
+    eid = 'f_b_' + f.id;
+    html += '<div class="field' + (f.wide ? ' wide' : '') + '" data-fid="b:' + f.id + '">';
+    html += '<label class="flabel" for="' + esc(eid) + '">' + esc(f.label);
+    if (f.note) { html += '<span class="fnote">' + esc(f.note) + '</span>'; }
+    html += '</label>';
+    if (f.type === 'textarea') {
+      html += '<textarea class="f" id="' + esc(eid) + '" rows="3">' + esc(f.value) + '</textarea>';
+    } else {
+      html += '<input class="f' + (f.numeric ? ' num' : '') + '" id="' + esc(eid) +
+              '" type="text" value="' + esc(f.value) + '">';
+    }
+    html += '</div>';
+  }
+  return html;
+}
+
+/* ---------- 建立單一「優化後」欄位 ---------- */
+function afterField(f) {
+  /* 公式欄位沒有輸入元件，label 改用 id + aria-labelledby 關聯；其餘用 for/id 配對 */
+  var eid = esc('f_a_' + f.id);
+  var lid = esc('lb_a_' + f.id);
+  var isCalc = f.kind === 'calc';
+  var html = '<div class="field' + (f.wide ? ' wide' : '') + '" data-fid="a:' + f.id + '">';
+  html += '<label class="flabel" ' + (isCalc ? 'id="' + lid + '"' : 'for="' + eid + '"') + '>' + esc(f.label);
+  if (f.required) { html += '<span class="req">*</span>'; }
+  if (f.tagText) { html += '<span class="fnote n2">' + esc(f.tagText) + '</span>'; }
+  html += '</label>';
+
+  if (f.kind === 'select') {
+    html += '<select class="f" id="' + eid + '">';
+    for (var j = 0; j < f.options.length; j++) {
+      html += '<option' + (f.options[j] === f.value ? ' selected' : '') + '>' + esc(f.options[j]) + '</option>';
+    }
+    html += '</select>';
+  } else if (f.kind === 'date') {
+    html += '<input class="f num" id="' + eid + '" type="date" value="' + esc(f.value) + '">';
+  } else if (f.kind === 'number') {
+    html += '<input class="f num" id="' + eid + '" type="number" min="0" max="999999" step="1" value="' +
+            esc(f.value) + '" data-live="' + esc(f.live) + '">';
+  } else if (isCalc) {
+    html += '<div class="calc" role="group" aria-labelledby="' + lid + '">' +
+            '<span class="v num" data-calc="' + esc(f.calc) + '">0</span>' +
+            '<span class="auto">公式自動</span></div>';
+  } else if (f.kind === 'readonly') {
+    html += '<input class="f" id="' + eid + '" type="text" value="' + esc(f.value) + '" readonly>';
+  } else if (f.kind === 'textarea') {
+    html += '<textarea class="f" id="' + eid + '" rows="2">' + esc(f.value) + '</textarea>';
+  } else {
+    html += '<input class="f" id="' + eid + '" type="text" value="' + esc(f.value) + '">';
+  }
+  html += '</div>';
+  return html;
+}
+
+/* ---------- 建立「優化後」表單 ---------- */
+function buildAfter() {
+  var html = '';
+  var g, i, k;
+  for (i = 0; i < AFTER_GROUPS.length; i++) {
+    g = AFTER_GROUPS[i];
+    html += '<div class="gname" data-fid="a:' + g.id + '">' +
+            '<span class="gnum num">' + g.no + '</span>' + esc(g.name) +
+            '<span class="tag">' + esc(g.hint) + '</span></div>';
+    for (k = 0; k < g.fields.length; k++) { html += afterField(g.fields[k]); }
+  }
+  html += '<details class="adv" id="advBox"><summary>進階／不常用欄位（' +
+          AFTER_ADVANCED.length + ' 欄，預設收起）</summary><div class="advbody">';
+  for (i = 0; i < AFTER_ADVANCED.length; i++) { html += afterField(AFTER_ADVANCED[i]); }
+  html += '</div></details>';
+  return html;
+}
+
+/* ---------- 重算公式欄位 ---------- */
+/* 把超出 min/max 的輸入寫回輸入框，避免畫面上顯示 -5 而公式顯示 0 的不一致；
+   空值與非數字不動（number 輸入框打字中途的合法狀態） */
+function clampLive(el) {
+  if (!el || el.value === '') { return; }
+  var v = Number(el.value);
+  if (!isFinite(v)) { return; }
+  if (v < 0) { el.value = '0'; }
+  else if (v > 999999) { el.value = '999999'; }
+}
+
+function recalc() {
+  if (MODE !== 'after') { return; }
+  var qEl = document.querySelector('[data-live="qty"]');
+  var pEl = document.querySelector('[data-live="price"]');
+  if (!qEl || !pEl) { return; }
+  clampLive(qEl);
+  clampLive(pEl);
+  var r = computeTotals(qEl.value, pEl.value, TAX_RATE);
+  var map = { subtotal: r.subtotal, tax: r.tax, total: r.total };
+  var nodes = document.querySelectorAll('[data-calc]');
+  for (var i = 0; i < nodes.length; i++) {
+    var key = nodes[i].getAttribute('data-calc');
+    nodes[i].textContent = 'NT$ ' + fmtMoney(map[key]);
+  }
+}
+
+/* ---------- 統計條 ---------- */
+function countAfterFields() {
+  var n = AFTER_ADVANCED.length;
+  for (var i = 0; i < AFTER_GROUPS.length; i++) { n += AFTER_GROUPS[i].fields.length; }
+  return n;
+}
+/* 優化後欄位分類：手填 / 公式自動 / 關聯或系統自動帶入 */
+function afterFieldKinds() {
+  var out = { manual: 0, calc: 0, auto: 0 };
+  var all = [];
+  var i, k, f;
+  for (i = 0; i < AFTER_GROUPS.length; i++) {
+    for (k = 0; k < AFTER_GROUPS[i].fields.length; k++) { all.push(AFTER_GROUPS[i].fields[k]); }
+  }
+  for (i = 0; i < AFTER_ADVANCED.length; i++) { all.push(AFTER_ADVANCED[i]); }
+  for (i = 0; i < all.length; i++) {
+    f = all[i];
+    if (f.kind === 'calc') { out.calc++; }
+    else if (f.kind === 'readonly') { out.auto++; }
+    else { out.manual++; }
+  }
+  return out;
+}
+function countIssues() {
+  var n = 0;
+  for (var i = 0; i < BEFORE_FIELDS.length; i++) { if (BEFORE_FIELDS[i].note) { n++; } }
+  return n;
+}
+
+/* ---------- 切換模式 ---------- */
+function renderForm() {
+  var host = byId('formHost');
+  if (MODE === 'before') {
+    host.innerHTML = buildBefore();
+    byId('formTitle').textContent = '客戶訂單表（範例·優化前）';
+    byId('formTag').className = 'tag bad';
+    byId('formTag').textContent = '範例：欄位混雜、無分組';
+    byId('formMeta').textContent = '範例情境：一張表塞進 CRM、進銷存、人事欄位';
+    byId('stFields').textContent = String(BEFORE_FIELDS.length);
+    byId('stManual').textContent = String(BEFORE_FIELDS.length);
+    byId('stManualWas').textContent = '';
+    byId('stGroups').textContent = '0';
+    byId('stIssue').textContent = String(countIssues());
+    byId('stReq').textContent = '無';
+  } else {
+    host.innerHTML = buildAfter();
+    var kinds = afterFieldKinds();
+    byId('formTitle').textContent = '客戶訂單表（優化版）';
+    byId('formTag').className = 'tag good';
+    byId('formTag').textContent = '優化：四段分組 + 進階摺疊';
+    byId('formMeta').textContent = countAfterFields() + ' 欄中 ' + kinds.calc + ' 欄公式、' +
+      kinds.auto + ' 欄關聯自動帶入，需手填 ' + kinds.manual + ' 欄（優化前 ' +
+      BEFORE_FIELDS.length + ' 欄全部手填）；欄位總數多 ' +
+      (countAfterFields() - BEFORE_FIELDS.length) + ' 欄是補上「聯絡 Email」與「客戶來源」';
+    byId('stFields').textContent = String(countAfterFields());
+    byId('stManual').textContent = String(kinds.manual);
+    byId('stManualWas').textContent = '（原 ' + BEFORE_FIELDS.length + ' 欄）';
+    byId('stGroups').textContent = String(AFTER_GROUPS.length);
+    byId('stIssue').textContent = '0';
+    byId('stReq').textContent = '已標示';
+
+    var lives = document.querySelectorAll('[data-live]');
+    for (var i = 0; i < lives.length; i++) {
+      lives[i].addEventListener('input', recalc);
+      lives[i].addEventListener('change', recalc);
+    }
+    recalc();
+  }
+  syncBarTop();
+  applyHighlight(true);
+}
+
+function setMode(m) {
+  MODE = m;
+  document.body.className = 'mode-' + m;
+  var btns = byId('seg').getElementsByTagName('button');
+  for (var i = 0; i < btns.length; i++) {
+    var on = btns[i].getAttribute('data-mode') === m;
+    btns[i].className = on ? (m === 'before' ? 'on warn' : 'on') : '';
+  }
+  renderForm();
+}
+
+/* ---------- 清單高亮 ---------- */
+function clearHighlight() {
+  var nodes = byId('formHost').querySelectorAll('.hl-problem, .hl-fixed');
+  for (var i = 0; i < nodes.length; i++) {
+    nodes[i].className = nodes[i].className
+      .replace(/\s*hl-problem/g, '').replace(/\s*hl-fixed/g, '');
+  }
+}
+
+function isNarrow() { return (window.innerWidth || 1200) <= 1000; }
+
+function formInView() {
+  var r = byId('formHost').getBoundingClientRect();
+  return r.top < (window.innerHeight || 0) && r.bottom > 0;
+}
+
+/* 窄螢幕不自動捲動，改在展開的說明裡顯示標示處數與一顆跳轉按鈕 */
+function updateJumpInfo(n) {
+  var items = byId('clist').getElementsByClassName('ci');
+  for (var i = 0; i < items.length; i++) {
+    var box = items[i].getElementsByClassName('jcount')[0];
+    if (box) { box.textContent = (i === ACTIVE && n > 0) ? ('已在表單標示 ' + n + ' 處') : ''; }
+  }
+}
+
+function jumpToHighlight() {
+  var el = byId('formHost').querySelector('.hl-problem, .hl-fixed');
+  if (el && el.scrollIntoView) { el.scrollIntoView({ block: 'start' }); }
+}
+
+/* fromToggle：這次高亮是切換「優化前／優化後」造成的（不是點清單） */
+function applyHighlight(fromToggle) {
+  clearHighlight();
+  updateJumpInfo(0);
+  if (ACTIVE < 0) { return; }
+  var item = CHECKLIST[ACTIVE];
+  var ids = MODE === 'before' ? item.b : item.a;
+  var cls = MODE === 'before' ? 'hl-problem' : 'hl-fixed';
+  var prefix = MODE === 'before' ? 'b:' : 'a:';
+  var advBox = byId('advBox');
+  var n = 0;
+  for (var i = 0; i < ids.length; i++) {
+    var el = byId('formHost').querySelector('[data-fid="' + prefix + ids[i] + '"]');
+    if (!el) { continue; }
+    el.className = el.className + ' ' + cls;
+    n++;
+    if (advBox && advBox.contains(el)) { advBox.open = true; }
+  }
+  updateJumpInfo(n);
+  /* 捲動目標依「文件順序最上面的高亮欄位」決定：querySelector 一定回傳文件順序，
+     不受 CHECKLIST 陣列排列影響（否則說明文字點名的欄位會被捲出視窗外） */
+  var first = byId('formHost').querySelector('.' + cls);
+  if (!first || !first.scrollIntoView) { return; }
+  /* 單欄版清單與表單相距近千 px，點清單自動捲動會把剛展開的說明推出畫面，
+     所以窄螢幕點清單時不捲，交給 .cjump 的按鈕。
+     但「切換優化前／後」是另一回事：使用者正在看表單才會去按上方開關，
+     這時要把對應欄位捲進來，前後對照才看得到差別。 */
+  var narrow = isNarrow();
+  if (!narrow) {
+    first.scrollIntoView({ block: 'nearest' });
+  } else if (fromToggle && formInView()) {
+    first.scrollIntoView({ block: 'start' });
+  }
+}
+
+function buildChecklist() {
+  var html = '';
+  for (var i = 0; i < CHECKLIST.length; i++) {
+    var c = CHECKLIST[i];
+    html += '<div class="ci" data-idx="' + i + '" role="button" tabindex="0">';
+    html += '<div class="cirow"><span class="cnum num">' + (i + 1) + '</span>' +
+            '<span class="ct">' + esc(c.t) + '</span></div>';
+    html += '<div class="cdetail">';
+    html += '<p><span class="lab b">問題</span>' + esc(c.why) + '</p>';
+    html += '<p><span class="lab">效益</span>' + esc(c.benefit) + '</p>';
+    if (c.ragic) {
+      html += '<p><span class="lab b">功能</span>Ragic：' + esc(c.ragic) + '</p>';
+    }
+    html += '<div class="cjump"><button type="button" class="jbtn" data-jump="1">' +
+            '跳到表單標示的欄位</button><span class="jcount"></span></div>';
+    html += '</div></div>';
+  }
+  byId('clist').innerHTML = html;
+  byId('ciCount').textContent = CHECKLIST.length + ' 項';
+}
+
+function selectItem(idx) {
+  ACTIVE = (ACTIVE === idx) ? -1 : idx;
+  var items = byId('clist').getElementsByClassName('ci');
+  for (var i = 0; i < items.length; i++) {
+    items[i].className = (i === ACTIVE) ? 'ci active' : 'ci';
+  }
+  applyHighlight();
+}
+
+/* ---------- 資料品質區塊 ---------- */
+function dqRows(list, total) {
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    var row = list[i];
+    var pct = Math.round(row.amount / total * 100);
+    /* 算好的百分比要印出來：只畫一條沒有數字的細條，窄螢幕上 6% 和空軌道分不出來，
+       螢幕閱讀器也讀到空白儲存格 */
+    html += '<tr><td>' + esc(row.city) + '</td>' +
+            '<td class="r">' + row.count + '</td>' +
+            '<td class="r">' + fmtMoney(row.amount) + '</td>' +
+            '<td class="r"><span class="pctv">' + pct + '%</span>' +
+            '<span class="bar1" role="img" aria-label="占比 ' + pct + '%">' +
+            '<i style="width:' + pct + '%"></i></span></td></tr>';
+  }
+  return html;
+}
+
+function buildDataQuality() {
+  var total = sumAmount(RECORDS);
+  var before = aggregateCities(RECORDS, false);
+  var after = aggregateCities(RECORDS, true);
+  byId('dqBefore').innerHTML = dqRows(before, total);
+  byId('dqAfter').innerHTML = dqRows(after, total);
+
+  byId('dqNote').innerHTML =
+    '同一批 6 筆資料，優化前的報表會看到 <b>' + before.length +
+    ' 個不同的「縣市」</b>（最大一列只有 ' + before[0].count + ' 筆、NT$ ' + fmtMoney(before[0].amount) +
+    '），優化後收斂成 <b>' + after.length + ' 列：' + esc(after[0].city) + ' ' + after[0].count +
+    ' 筆、NT$ ' + fmtMoney(after[0].amount) +
+    '</b>。差別不在畫面好不好看，而在於優化前的報表看不出「' + esc(after[0].city) +
+    '」這個市場合計貢獻 NT$ ' + fmtMoney(after[0].amount) +
+    '。同樣的問題會出現在付款狀態、單位、品名這些欄位上。（標準值採用政府公告寫法「臺」，與縣市選單一致）';
+
+  var html = '';
+  for (var i = 0; i < RECORDS.length; i++) {
+    var r = RECORDS[i];
+    var n = normalizeCity(r.city);
+    var diff = n !== r.city;
+    html += '<tr><td>' + esc(r.name) + '</td>' +
+            '<td>' + (diff ? '<span class="tag bad">' + esc(r.city) + '</span>' : esc(r.city)) + '</td>' +
+            '<td><span class="tag good">' + esc(n) + '</span></td>' +
+            '<td class="r">' + fmtMoney(r.amount) + '</td></tr>';
+  }
+  byId('rawRows').innerHTML = html;
+}
+
+/* ---------- sticky 位置：讓工具列剛好貼在免責橫幅下方 ----------
+   同時把「實際吸頂高度」寫進 --sticky-h，供 scroll-margin-top 使用，
+   避免高亮欄位捲到吸頂區塊底下（依實測高度計算，字級或換行造成的高度變化都吃得住） */
+function syncBarTop() {
+  var r = document.querySelector('.ribbon');
+  var b = document.querySelector('.bar');
+  if (!r || !b || !b.style) { return; }
+  var h = r.offsetHeight || 0;
+  if (h) { b.style.top = h + 'px'; }
+  var stick = h;
+  if (window.getComputedStyle && window.getComputedStyle(b).position === 'sticky') {
+    stick += b.offsetHeight || 0;
+  }
+  if (document.documentElement.style.setProperty) {
+    document.documentElement.style.setProperty('--sticky-h', (stick + 12) + 'px');
+  }
+}
+
+/* ---------- 啟動 ---------- */
+function init() {
+  buildChecklist();
+  buildDataQuality();
+
+  byId('seg').addEventListener('click', function (e) {
+    var t = e.target;
+    while (t && t !== this && !t.getAttribute('data-mode')) { t = t.parentNode; }
+    if (t && t.getAttribute && t.getAttribute('data-mode')) {
+      setMode(t.getAttribute('data-mode'));
+    }
+  });
+
+  byId('clist').addEventListener('click', function (e) {
+    var t = e.target;
+    /* 「跳到表單」按鈕：只捲動，不要順便把這一條收起來 */
+    var j = t;
+    while (j && j !== this && !(j.getAttribute && j.getAttribute('data-jump'))) { j = j.parentNode; }
+    if (j && j !== this && j.getAttribute && j.getAttribute('data-jump')) {
+      jumpToHighlight();
+      return;
+    }
+    while (t && t !== this && !(t.getAttribute && t.getAttribute('data-idx') !== null)) {
+      t = t.parentNode;
+    }
+    if (t && t !== this && t.getAttribute && t.getAttribute('data-idx') !== null) {
+      selectItem(parseInt(t.getAttribute('data-idx'), 10));
+    }
+  });
+
+  byId('clist').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') { return; }
+    var t = e.target;
+    if (t && t.getAttribute && t.getAttribute('data-idx') !== null) {
+      e.preventDefault();
+      selectItem(parseInt(t.getAttribute('data-idx'), 10));
+    }
+  });
+
+  setMode('before');
+
+  syncBarTop();
+  if (window.addEventListener) {
+    window.addEventListener('resize', syncBarTop);
+    window.addEventListener('load', syncBarTop);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
